@@ -12,19 +12,17 @@ const profile = JSON.parse(fs.readFileSync(path.join(__dirname, "models/todos.js
 
 const findElementById = (id) => { return profile.find((el) => el.id === id) }
 
-const checkIfUpdateSuccessful = (res) => {
+const checkIfUpdateSuccessful = (res, badStatusCode, goodStatusCode) => {
 
   fs.writeFile((path.join(__dirname, "models/todos.json")), JSON.stringify(profile), (err) => {
 
     if (err) {
 
-      const message = "Unable to update. Couldn't write to file";
-      res.status(500).send(message);
+      res.status(badStatusCode).send("Unsuccessful request");
 
     } else {
 
-      const message = "Profile updated";
-      res.status(200).send(message);
+      res.status(goodStatusCode).send("Successful request");
     }
 
   });
@@ -70,6 +68,8 @@ app.get("/todos/:id", (req, res) => {
 
   res.send(findElementById(req.params.id));
 
+  checkIfUpdateSuccessful(res, 404, 200);
+
 });
 
 app.post("/todos", (_, res) => {
@@ -78,7 +78,7 @@ app.post("/todos", (_, res) => {
 
   profile.splice(0, 0, body);
   
-  checkIfUpdateSuccessful(res);
+  checkIfUpdateSuccessful(res, 404, 201);
 
 });
 
@@ -100,7 +100,7 @@ app.post("/todos/:id/complete", (req, res) => {
 
   findElementById(req.params.id).completed = true;
 
-  checkIfUpdateSuccessful(res);
+  checkIfUpdateSuccessful(res, 404, 200);
 
 });
 
@@ -108,7 +108,7 @@ app.post("/todos/:id/undo", (req, res) => {
 
   findElementById(req.params.id).completed = false;
 
-  checkIfUpdateSuccessful(res);
+  checkIfUpdateSuccessful(res, 404, 200);
 
 });
 
@@ -118,7 +118,7 @@ app.delete("/todos/:id", (req, res) => {
 
   profile.splice(item, 1);
   
-  checkIfUpdateSuccessful(res);
+  checkIfUpdateSuccessful(res, 404, 200);
 
 
 });
