@@ -10,7 +10,20 @@ const { json } = require("express");
 const todoFilePath = process.env.BASE_JSON_PATH;
 const profile = JSON.parse(fs.readFileSync(path.join(__dirname, "models/todos.json")));
 
-const findElementById = (id) => { return profile.find((el) => el.id === id) }
+const findElementById = (id, res) => { 
+
+  const element =  profile.find((el) => el.id === id) 
+
+  if (!element){
+
+    res.status(404).send("Invalid ID");
+  } else
+  {
+
+    return element;
+  }
+
+}
 
 const checkIfUpdateSuccessful = (res, badStatusCode, goodStatusCode) => {
 
@@ -66,7 +79,7 @@ app.get("/todos/overdue", (_, res) => {
 app.get("/todos/:id", (req, res) => {
   res.header("Content-Type", "application/json");
 
-  res.send(findElementById(req.params.id));
+  res.send(findElementById(req.params.id, res));
 
   checkIfUpdateSuccessful(res, 404, 200);
 
@@ -85,7 +98,7 @@ app.post("/todos", (_, res) => {
 app.patch("/todos/:id", (req, res) =>{
   
 
-  findElementById(req.params.id).name = req.body.name;
+  findElementById(req.params.id, res).name = req.body.name;
 
   if(req.body.due){
     item.due = req.body.due;
@@ -98,7 +111,7 @@ app.patch("/todos/:id", (req, res) =>{
 
 app.post("/todos/:id/complete", (req, res) => {
 
-  findElementById(req.params.id).completed = true;
+  findElementById(req.params.id, res).completed = true;
 
   checkIfUpdateSuccessful(res, 404, 200);
 
@@ -106,7 +119,7 @@ app.post("/todos/:id/complete", (req, res) => {
 
 app.post("/todos/:id/undo", (req, res) => {
 
-  findElementById(req.params.id).completed = false;
+  findElementById(req.params.id, res).completed = false;
 
   checkIfUpdateSuccessful(res, 404, 200);
 
@@ -114,7 +127,7 @@ app.post("/todos/:id/undo", (req, res) => {
 
 app.delete("/todos/:id", (req, res) => {
 
-  const item = findElementById(req.params.id);
+  const item = findElementById(req.params.id, res);
 
   profile.splice(item, 1);
   
