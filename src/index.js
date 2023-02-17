@@ -100,9 +100,11 @@ app.patch("/todos/:id", (req, res) =>{
   const item = profile.find((el) => el.id === id);
 
   item.name = req.body.name;
-  item.due = req.body.due;
 
-  console.log(item.name);
+  if(req.body.due){
+    item.due = req.body.due;
+  }
+
 
   fs.writeFile((path.join(__dirname, "models/todos.json")), JSON.stringify(profile), (err) => {
 
@@ -121,6 +123,34 @@ app.patch("/todos/:id", (req, res) =>{
 
 })
 
+
+app.post("/todos/:id/complete", (req, res) => {
+
+  const profile = JSON.parse(fs.readFileSync(path.join(__dirname, "models/todos.json")));
+
+  const id = req.params.id;
+
+  const item = profile.find((el) => el.id === id);
+
+  item.completed = true;
+
+  fs.writeFile((path.join(__dirname, "models/todos.json")), JSON.stringify(profile), (err) => {
+
+    if (err) {
+
+      const message = "Unable to update. Couldn't write to file";
+      res.status(500).send(message);
+
+    } else {
+
+      const message = "Profile updated";
+      res.status(200).send(message);
+    }
+
+  });
+  
+
+});
 
 
 //Add GET request with path '/todos/overdue'
