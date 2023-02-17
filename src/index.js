@@ -176,23 +176,34 @@ app.post("/todos/:id/undo", (req, res) => {
     }
 
   });
-  
 
 });
 
+app.delete("/todos/:id", (req, res) => {
 
-//Add GET request with path '/todos/overdue'
+  const profile = JSON.parse(fs.readFileSync(path.join(__dirname, "models/todos.json")));
 
-//Add GET request with path '/todos/completed'
+  const id = req.params.id;
 
-//Add POST request with path '/todos'
+  const item = profile.find((el) => el.id === id);
 
-//Add PATCH request with path '/todos/:id
+  profile.splice(item, 1);
 
-//Add POST request with path '/todos/:id/complete
+  fs.writeFile((path.join(__dirname, "models/todos.json")), JSON.stringify(profile), (err) => {
 
-//Add POST request with path '/todos/:id/undo
+    if (err) {
 
-//Add DELETE request with path '/todos/:id
+      const message = "Unable to update. Couldn't write to file";
+      res.status(500).send(message);
+
+    } else {
+
+      const message = "Profile updated";
+      res.status(200).send(message);
+    }
+
+  });
+
+});
 
 module.exports = app;
