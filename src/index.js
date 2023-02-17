@@ -99,8 +99,10 @@ app.patch("/todos/:id", (req, res) =>{
 
   const item = profile.find((el) => el.id === id);
 
-  item.due = req.body.due;
   item.name = req.body.name;
+  item.due = req.body.due;
+
+  console.log(item.name);
 
   fs.writeFile((path.join(__dirname, "models/todos.json")), JSON.stringify(profile), (err) => {
 
