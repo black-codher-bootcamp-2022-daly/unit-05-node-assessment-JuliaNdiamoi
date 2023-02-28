@@ -22,7 +22,6 @@ const findElementById = (id, res) => {
 
     return element;
   }
-
 }
 
 const checkIfUpdateSuccessful = (res, badStatusCode, goodStatusCode) => {
@@ -98,10 +97,14 @@ app.post("/todos", (_, res) => {
 app.patch("/todos/:id", (req, res) =>{
   
 
-  findElementById(req.params.id, res).name = req.body.name;
+  const element = findElementById(req.params.id, res)
+  
+  if(req.body.name){
+    element.name = req.body.name;
+  }
 
   if(req.body.due){
-    item.due = req.body.due;
+    element.due = req.body.due;
   }
 
   checkIfUpdateSuccessful(res);
